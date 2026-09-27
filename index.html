@@ -87,14 +87,9 @@
 			In this project we built a rasterizer that turns the triangles described in svg code into real images! Starting with just simple colored triangles, we eventually built up to texture mapping
 			through exploring antialiasing, supersampling, transforms, and barycentric coordinates!
 		</p>
-		<p>What we each found most interesting:</p>
-		<ul>
-			<li><b>Jaansi:</b> I thought it was really cool to see how everything reduces to triangles.</li>
-			<li><b>Pranav:</b> I thought it was really cool how much of the rendering comes down to some pretty simple math.</li>
-		</ul>
 		<p>
 			Neither of us had thought too much about how graphics are actually generated before, so seeing it reduce
-			to logic we could recreate ourselves was super cool.
+			to logic we could recreate ourselves was super cool. For example, to know that we can reduce all the images on our computer to triangles, linear algebra, and other simple math that we have learned in school already was really interesting.
 		</p>
 		<p>
 			<b>Extra credit:</b> we added a scanline optimization for rasterizing (with timing benchmarks), viewport
@@ -238,25 +233,21 @@
 		<!-- ===================================================================== -->
 		<h2>Task 3: Transforms</h2>
 		<p>
-			The three transforms are 3&times;3 matrices in homogeneous coordinates: <code>translate(dx, dy)</code> is the
-			identity with <code>dx, dy</code> in the last column, <code>scale(sx, sy)</code> is diagonal, and
-			<code>rotate(deg)</code> is the usual 2D rotation matrix. The <code>Vector2D</code> multiply lifts a point to
-			<code>(x, y, 1)</code>, multiplies, and divides back by <code>z</code>, which is the trick that lets a
-			3&times;3 matrix handle translation. One bug we hit: <code>rotate</code> at first passed degrees straight into
-			<code>cos</code>/<code>sin</code>, which want radians, so we converted with <code>deg &times; &pi; / 180</code>
-			first.
+			In this task we used transforms to move, rotate, and resize things. At their core they are just 3&times;3
+			matrices: <code>translate(dx, dy)</code> is the identity with <code>dx, dy</code> in the last column,
+			<code>scale(sx, sy)</code> is diagonal, and <code>rotate(deg)</code> is the standard 2D rotation.
 		</p>
 		<p>
-			For <code>my_robot.svg</code> we turned cubeman into a friendly waving robot named <b>Tillu</b> and made him
-			red. The whole pose is built out of nested transform groups:
+			As you can see, we turned cubeman into Tillu. Tillu is red and very friendly, gentle, and calm. His whole pose
+			was just nested transform groups:
 		</p>
 		<ul>
-			<li><b>Head:</b> tilted with a <code>rotate(45)</code> to give him some personality. We put the face (two eyes
-			and a smile) <em>outside</em> the head's rotation group, so it stays upright on the tilted diamond head instead
-			of rotating with it.</li>
-			<li><b>Right arm:</b> rotated <code>-45&deg;</code> at the shoulder and then another <code>-45&deg;</code> at the
-			elbow (a group inside the shoulder group), so the forearm points up in a wave.</li>
-			<li><b>Left arm:</b> rotated <code>-75&deg;</code> at the shoulder so it hangs down by his side.</li>
+			<li><b>Head:</b> tilted with a <code>rotate(45)</code> to give him some personality. We kept the face (two eyes
+			and a smile) <em>outside</em> the head's rotation group, so it stayed upright on the tilted diamond head instead
+			of spinning with it.</li>
+			<li><b>Right arm:</b> rotated <code>-45&deg;</code> at the shoulder, then another <code>-45&deg;</code> at the
+			elbow (a group nested inside the shoulder group), so the forearm pointed up in a wave.</li>
+			<li><b>Left arm:</b> rotated <code>-75&deg;</code> at the shoulder so it hung down at his side.</li>
 			<li><b>Legs and torso:</b> scaled and translated cubes making up the body.</li>
 		</ul>
 		<p>
@@ -365,7 +356,7 @@
 			space, so the per-pixel step is constant across the triangle). Then in <code>Texture::get_level</code> we
 			differenced them to get \(\big(\frac{du}{dx},\frac{dv}{dx}\big)\) and \(\big(\frac{du}{dy},\frac{dv}{dy}\big)\),
 			scaled by the full-resolution texture size, and took
-			\[ L = \log_2\Big(\max\big(\|(\tfrac{du}{dx},\tfrac{dv}{dx})\|,\; \|(\tfrac{du}{dy},\tfrac{dv}{dy})\|\big)\Big), \]
+			\[ L = \log_2\Big(\max\big(\|(\frac{du}{dx},\frac{dv}{dx})\|,\; \|(\frac{du}{dy},\frac{dv}{dy})\|\big)\Big), \]
 			which is basically "how many texels wide is this pixel's footprint, in powers of two." Then
 			<code>Texture::sample</code> uses whichever level mode is selected:
 		</p>
