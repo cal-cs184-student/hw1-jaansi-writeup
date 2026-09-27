@@ -382,7 +382,7 @@
 			makes it darker toward black (level 0), which is what confirmed the derivatives and the \(\log_2\) were right.
 		</p>
 
-		<h3>Speed / memory / antialiasing trade-offs</h3>
+		<h3>Trade-offs</h3>
 		<table class="data">
 			<tr><th>Technique</th><th>Speed</th><th>Memory</th><th>Antialiasing power</th></tr>
 			<tr>
@@ -405,10 +405,9 @@
 			</tr>
 		</table>
 		<p>
-			tldr: supersampling is the heavy hammer, most powerful but most expensive in time and memory. Mipmapping spends
+			tldr: supersampling is the most powerful but most expensive in both time and memory. Mipmapping spends
 			a fixed extra third of memory to get cheap minification antialiasing that costs the same no matter how far away
-			the surface is. Bilinear pixel sampling is nearly free and helps up close but not far away. They're
-			complementary, so in practice you'd combine them (trilinear plus a modest sample rate).
+			the surface is. Bilinear pixel sampling is the far cheapest and helps up close but not far away.
 		</p>
 
 		<h3>Four sampling combinations</h3>
@@ -431,22 +430,19 @@
 			sampling method changes.</figcaption>
 		</figure>
 		<p style="font-size: 0.9em; color: #555;">
-			For our own texture we used a frame from Kung Fu Panda (lots of fine detail in the foreground debris and
-			background), dropped it in <code>img/</code>, and pointed a copy of <code>svg/texmap/test5.svg</code> at it
-			(<code>svg/texmap/kungfupanda.svg</code>), which also warps it into that swirl. We zoomed out so the texture is
-			minified, since that's where level sampling actually matters. Going from L_ZERO to L_NEAREST clears up the
-			sparkly aliasing in the fine detail, and adding P_LINEAR smooths things out further within each level. The
-			differences are easiest to spot in the pixel inspector, where L_ZERO shows sharp, high-contrast texels and the
-			mipmapped modes show smoother, averaged ones.
+			For our own texture we used a beautiful frame from Kung Fu Panda, dropped it in <code>img/</code>, and pointed a copy of <code>svg/texmap/test5.svg</code> at it
+			(<code>svg/texmap/kungfupanda.svg</code>), which also warps it into that swirl. We zoomed out so the texture was
+			minified to best see level sampling. Going from L_ZERO to L_NEAREST cleared up the
+			sparkly aliasing, and adding P_LINEAR smoothened things out further within each level. We saw that L_ZERO had sharp, high-contrast texels and the
+			mipmapped modes had smoother, averaged ones.
 		</p>
 
 		<h3>Extra Credit: Anisotropic filtering</h3>
 		<p>
 			Trilinear picks a single level based on the longer side of the pixel's footprint, so when the footprint is long
-			and thin (a surface seen at a grazing angle) it over-blurs across the short direction. Anisotropic filtering
-			handles that by treating the footprint as an ellipse: it takes several samples stepping along the long axis and
-			picks the mip level from the short axis, so detail survives along the thin direction. We added it as a fourth
-			level mode (<code>L_ANISOTROPIC</code>, next to L_ZERO, L_NEAREST, and L_LINEAR):
+			and thin, it over-blurs across the short direction. Anisotropic filtering
+			instead treats the footprint as an ellipse: it takes several samples stepping along the long axis and
+			picks the mip level from the short axis, so detail survives along the thin direction as well. 
 		</p>
 		<ul>
 			<li>We reused the two footprint vectors from <code>get_level</code>. The longer one sets the step direction and how
@@ -455,9 +451,7 @@
 			<li>We took \(n\) trilinear samples spread along the long axis, centered on the sample's UV, and average them.</li>
 		</ul>
 		<p>
-			Since it can take up to 16 trilinear samples per pixel, it's clearly the slowest mode, which the per-frame
-			<code>clock()</code> readout confirms (measured while cycling the level modes on a minified scene, nearest
-			pixel):
+			Since it can take up to 16 trilinear samples per pixel, it's clearly the slowest out of them all, which empirical testing confirmed as well:
 		</p>
 		<table class="data">
 			<tr><th>Level mode</th><th>Per-frame draw time</th><th>Relative cost</th></tr>
@@ -467,9 +461,8 @@
 			<tr><td>L_ANISOTROPIC</td><td>~8 ms</td><td>~4.5&times;</td></tr>
 		</table>
 		<p style="font-size: 0.9em; color: #555;">
-			Our scenes are viewed pretty much head-on rather than at a grazing angle, so anisotropic ends up looking about
-			the same as trilinear here; its real advantage shows up on long, thin footprints from surfaces seen edge-on. So
-			for this scene the timing table is the clearest evidence of the extra work it's doing.
+			Since this scene is not from a long angle, so anisotropic ends up looking about
+			the same as trilinear, so it's only worth using (because of how much more expensive it is) in certain cases.
 		</p>
 		<figure>
 			<table class="data" style="border:none;">
