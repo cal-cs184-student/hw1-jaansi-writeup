@@ -80,6 +80,8 @@
 
 		<br>
 
+		Link to webpage: <a href="https://cal-cs184-student.github.io/hw1-jaansi-writeup/">cal-cs184-student.github.io/hw1-jaansi-writeup</a>
+		<br>
 		Link to GitHub repository: <a href="https://github.com/cal-cs184-student/hw1-jaansi">github.com/cal-cs184-student/hw1-jaansi</a>
 
 		<h2>Overview</h2>
@@ -423,8 +425,8 @@
 		<p style="font-size: 0.9em; color: #555;">
 			For our own texture we used a beautiful frame from Kung Fu Panda, dropped it in <code>img/</code>, and pointed a copy of <code>svg/texmap/test5.svg</code> at it
 			(<code>svg/texmap/kungfupanda.svg</code>), which also warps it into that swirl. We zoomed out so the texture was
-			minified to best see level sampling. Going from L_ZERO to L_NEAREST cleared up the
-			sparkly aliasing, and adding P_LINEAR smoothened things out further within each level. We saw that L_ZERO had sharp, high-contrast texels and the
+			minified to best see level sampling. Going from L_ZERO to L_NEAREST made the fine detail look much cleaner instead of noisy
+			and broken up, and adding P_LINEAR smoothed it further within each level. We saw that L_ZERO had sharp, high-contrast texels and the
 			mipmapped modes had smoother, averaged ones.
 		</p>
 
@@ -466,9 +468,28 @@
 		</figure>
 
 		<!-- ===================================================================== -->
-		<h2>(Optional) Task 7: Extra Credit - Draw Something Creative!</h2>
-		<p>Not attempted.</p>
-
-		</div>
+		<h2>Task 7: Art Competition</h2>
+		<p>
+			For Task 7 we made a mandala! I really like symmetric patterns, and was inspired by the Rangolis my family
+			makes with colored powder for Diwali (which is coming up!).
+		</p>
+		<figure>
+			<img src="images/competition.png" alt="rose-gold mandala made of color triangles" width="500px"/>
+		</figure>
+		<p>Here are the steps we took to make this:</p>
+		<ol>
+			<li>We worked in polar coordinates around a center point, placing every shape by a radius and an angle.</li>
+			<li>To get the symmetry, we made one small shape (a petal or a spike) and rotated copies of it all the way
+			around the center to form a full ring, using transforms.</li>
+			<li>Then we stacked those rings from the center outward, one layer at a time, each ring made of its own
+			repeated shape.</li>
+			<li>We gave every shape a smooth gradient from a light tip to a darker base using barycentric color
+			triangles, so the petals look like they have some depth.</li>
+			<li>Finally we picked a rose-gold palette so all the colors go together.</li>
+		</ol>
+		<p>
+			We put all of this into a Python script (<code>src/generate_mandala.py</code>) that generates the final
+			<code>competition.svg</code>.
+		</p></div>
 	</body>
 </html>
