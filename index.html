@@ -195,13 +195,6 @@
 			samples down into the one color that actually showed up on screen. (At sample rate 1 there was only one sample
 			per pixel, so it was just Task 1 again!)
 		</p>
-		<p>A couple of smaller things:</p>
-		<ul>
-			<li><code>set_sample_rate</code> (the <code>=</code>/<code>-</code> keys) and <code>set_framebuffer_target</code>
-			(a window resize) both resized the buffer so it fit the new number of samples.</li>
-			<li>Points and lines just filled all of a pixel's samples with the same color, so they still came out solid.
-			They didn't get smoothed, which the spec allowed.</li>
-		</ul>
 		<p>
 			Why did this help? Because each pixel now roughly measured how much of it the triangle covered, instead of just
 			asking "is the center inside?" A half-covered edge pixel came out half-shaded, so edges faded smoothly and thin
@@ -231,6 +224,28 @@
 		<p>
 			At rate 1 everything was super jagged/the thin corner had gaps, since each pixel was either filled or not. As we increased the supersamplin (4 -> 9 -> 16), it got smoother and smoother. This makes sense; more samples give a better estimate of how much of each pixel the triangle really covers, so the pixels are closer to the (smooth) original image.
 		</p>
+
+		<h3>Extra Credit: Jittered Sampling</h3>
+		<p>
+			For extra credit we added jittered sampling: instead of sampling the same fixed spot in every pixel (which
+			causes moire), we nudge each sample to a random spot, which turns that moire into less-noticeable noise.
+		</p>
+		<ul>
+			<li>We sampled at \((x + (si + j_x)/n,\; y + (sj + j_y)/n)\) with \(j_x, j_y\) random in \([0,1)\).</li>
+			<li>The offsets come from a deterministic hash of the pixel and sample index, so the pattern is stable.</li>
+		</ul>
+		<p>
+			On a fine rotated checkerboard, grid sampling produces big moire swirls that aren't really there, while jittered
+			turns them into even noise:
+		</p>
+		<figure>
+			<table class="data" style="border:none;">
+				<tr>
+					<td style="border:none;"><img src="images/task2ec_grid.png" alt="checkerboard with grid supersampling" width="330px"/><figcaption>Grid supersampling (moire)</figcaption></td>
+					<td style="border:none;"><img src="images/task2ec_jit.png" alt="checkerboard with jittered sampling" width="330px"/><figcaption>Jittered sampling (noise)</figcaption></td>
+				</tr>
+			</table>
+		</figure>
 
 		<!-- ===================================================================== -->
 		<h2>Task 3: Transforms</h2>
